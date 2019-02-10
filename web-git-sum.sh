@@ -48,7 +48,7 @@ if [[ "$tags" ]]; then
 fi
 
 
-files=$(git ls-tree --full-tree --name-only -r HEAD)
+files=$(git -c core.quotePath=false ls-tree --full-tree --name-only -r HEAD)
 
 
 readme=$(grep -im1 readme <<< "$files" || true)
@@ -58,7 +58,7 @@ fi
 
 while read -r file; do
 	filelist+=$(echo "$file" | escapeHTML | sed -E 's|(.+)/|<span class=dir>\1/</span>|g')$'\n'
-	filelist+=$( (git cat-file -s "HEAD:$file" 2>/dev/null || echo - ) | human)$'\n\n'
+	filelist+=$( (git cat-file -s "HEAD:$file" || echo - ) | human)$'\n\n'
 done <<< "$files"
 
 filelist=$(toTable Name Size <<< "$filelist")
