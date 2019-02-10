@@ -109,6 +109,12 @@ tr:hover td {
 #log + table td:first-child, .dir, #desc{
   color:#888;
 }
+@media(max-width:800px){
+  td,tr,table{display:block;min-width:auto}
+  th{display:none}
+  tr{margin:1em 0}
+  td:first-child{font-size:large}
+}
 </style>
 EOF
 )
@@ -144,6 +150,7 @@ cd ..
 {
 cat << EOF
 <!doctype html>
+<meta name=viewport content="width=device-width, initial-scale=1.0">
 <title>Repositories</title>
 $style
 <h2>Repositories</h2>
