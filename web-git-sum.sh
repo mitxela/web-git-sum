@@ -34,6 +34,13 @@ function toTable() {
 	echo "</tr><tr><td>${fields}</td></tr></table>"
 }
 
+function ansi2html(){
+        # This is a complete hack, but it seems to work well enough for the output of git log
+        sed -E 's|\[0?m|</span>|g' |\
+        perl -pe 's|\[([0-9;]+)m|"<span class=\"c".($1=~s/;/t/gr)."\">"|ge' |\
+        sed 's,</span></span>,</span>,g'
+}
+
 repo=$(basename $(pwd))
 name=$(basename $(pwd) .git)
 
@@ -63,9 +70,11 @@ done <<< "$files"
 
 filelist=$(toTable Name Size <<< "$filelist")
 
-commits=$(git log --format="%h%n%s%n%an%n%ad%n" --date=format:'%Y-%m-%d %H:%M' -$NUMCOMMITS | escapeHTML | toTable "Hash" "Commit message" "Author" "Date")
+#commits=$(git log --format="%h%n%s%n%an%n%ad%n" --date=format:'%Y-%m-%d %H:%M' -$NUMCOMMITS | escapeHTML | toTable "Hash" "Commit message" "Author" "Date")
 
-hidden=$(( $(git rev-list HEAD --count) - "$NUMCOMMITS" ))
+commits="<div id=graph>"$(git log --format="%C(ul)%h%C(auto)%d%C(reset)%n%C(bold)%an%C(reset) %ad%n%s%n" --date=format:'%Y-%m-%d %H:%M' --graph --all --color=always -$NUMCOMMITS | escapeHTML | ansi2html)"</div>"
+
+hidden=$(( $(git rev-list --all --count) - "$NUMCOMMITS" ))
 
 if [[ $hidden -eq "1" ]]; then commits+="[ $hidden commit remaining ]"; fi
 if [[ $hidden -gt "1" ]]; then commits+="[ $hidden commits remaining ]"; fi
@@ -115,6 +124,18 @@ tr:hover td {
   tr{margin:1em 0}
   td:first-child{font-size:large}
 }
+#graph{white-space:pre-wrap}
+.c1, .c1t32, .c1t33, .c1t36, .c31, .c32, .c33, .c34, .c35, .c36 {font-weight:bold}
+.c4   {color:grey}
+.c1t32{color:blue}
+.c1t33{color:green}
+.c1t36{color:orange}
+.c31{color:red}
+.c32{color:orange}
+.c33{color:green}
+.c34{color:magenta}
+.c35{color:blue}
+.c36{color:cyan}
 </style>
 EOF
 )
@@ -135,7 +156,7 @@ if [[ "$readme" ]]; then echo " | <a href=#readme>README</a>"; fi
 
 echo "<hr>"
 echo "<h2 id=refs>Branches</h2>$branches $tags<hr>"
-echo "<h2 id=files>File Tree</h2>$filelist<hr>"
+echo "<h2 id=files>File Tree (HEAD)</h2>$filelist<hr>"
 echo "<h2 id=log>History</h2>$commits"
 echo "$readme"
 
