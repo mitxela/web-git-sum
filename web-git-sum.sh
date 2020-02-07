@@ -54,6 +54,10 @@ if [[ "$tags" ]]; then
 	tags="<h2>Tags</h2>$tags"
 fi
 
+if ! git ls-tree -r HEAD > /dev/null 2>&1 ; then
+  defaultBranch=$(git for-each-ref --format='%(refname)' refs/heads --count 1)
+  git symbolic-ref HEAD "$defaultBranch"
+fi
 
 files=$(git -c core.quotePath=false ls-tree --full-tree --name-only -r HEAD)
 
