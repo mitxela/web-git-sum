@@ -100,7 +100,7 @@ h1,h2,h3,h4,h5,h6 {
 hr {
   border: 1px solid #aaa;
 }
-img{
+#logo{
   float:left;
   border:0;
   margin-right:10px;
@@ -150,7 +150,7 @@ cat << EOF
 <meta name=viewport content="width=device-width, initial-scale=1.0">
 <title>$name</title>
 $style
-<a href=$URL><img src=/logo.jpg></a>
+<a href=$URL><img id=logo src=/logo.jpg></a>
 <h1>$name</h1>
 <div id=desc>$description</div>
 <div id=url>git clone ${URL}${repo}</div>
